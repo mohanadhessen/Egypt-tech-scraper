@@ -53,6 +53,3 @@ def sigma(scraper,product_name, page_number):
 
 
 
-
-
-
