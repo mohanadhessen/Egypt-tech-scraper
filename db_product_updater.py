@@ -81,7 +81,7 @@ def get_most_searched():
             ssl_disabled=False
         )
         mycursor = db.cursor(dictionary=True)
-        query = "SELECT product_name, search_count FROM most_searched ORDER BY search_count DESC LIMIT 10"
+        query = "SELECT token, total_count FROM tokens ORDER BY total_count DESC LIMIT 10"
         mycursor.execute(query)
         results = mycursor.fetchall()
         db.close()
@@ -91,3 +91,7 @@ def get_most_searched():
     except Exception as e:
         logging.error(f'Error connecting to the database: {e}')
         raise  # Re-raise to fail the GitHub Action if DB connection fails
+
+
+
+

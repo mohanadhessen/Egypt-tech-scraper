@@ -1,75 +1,59 @@
-import requests
-from bs4 import BeautifulSoup
 import logging
-logging.basicConfig(level=logging.INFO,)
 
 
 
-def compumarts_scraper(product_name):
-    logging.info('🔍 scraping compumarts...')
-    
-    data = []  # List to store scraped product data
-    page_number = 1  # Start from page 1
 
-    while True:
-        try:
-            # Set headers to mimic a real browser request
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0 Safari/537.36',
-                'Accept-Language': 'en-US,en;q=0.9',
-            }
 
-            # Send GET request to the search results page
-            r = requests.get(
-                f'https://www.compumarts.com/search?options[prefix]=last&page={page_number}&q={product_name}',
-                headers=headers,
-                timeout=40
-            )
-            soup = BeautifulSoup(r.text, 'html.parser')
+def compumarts(scraper,product_name, page_number):
+    logging.info('scraping compumarts...')
 
-            # Get the main products container; break if not found
-            results_container = soup.find('div', class_='main-products-grid__results')
-            if not results_container or not results_container.find('ul'):
-                break
+    try:
+        url = f"https://www.compumarts.com/search?options[prefix]=last&page={page_number}&q={product_name}"
 
-            main_products = results_container.find('ul')
-            products = main_products.find_all('li', class_='js-pagination-result')
+        soup = scraper.fetch_page(url, 10)
+        if soup is None:
+            scraper.signal = False
+            raise Exception("fetch_page failed")
 
-            for product in products:
-                # Extract product title and link
-                name_block = product.find('a', class_='card-link')
-                title = name_block.text
-                link = 'https://www.compumarts.com' + name_block.get('href')
+        items = soup.select("div.main-products-grid__results li")
+        if not items:
+            scraper.signal = False
+            return
 
-                # Try to extract the price; skip item if missing
-                try:
-                    price = product.find('span', class_='js-value').text
-                except:
-                    continue
+        for item in items:
 
-                # Default to in stock unless "Sold out" is found
-                in_stock = True
-                label_container = product.find('span', class_='product-label--sold-out')
-                if label_container:
-                    if label_container.text.strip() == 'Sold out':
-                        in_stock = False
+            # title
+            title_el = item.select_one(".card__title a")
+            title = title_el.get_text(strip=True) if title_el else None
 
-                # Append product data to the result list
-                data.append({
-                    'title': title,
-                    'price': price,
-                    'link': link,
-                    'in_stock': in_stock,
-                    'store': 'compumarts'
-                })
+            # link
+            link = "https://www.compumarts.com/" + title_el.get("href") if title_el else None
 
-            print(f'finished scraping this page {page_number}')
-            page_number += 1  # Move to next page
+            # price
+            price_el = item.select_one(".price__current .js-value")
+            price = price_el.get_text(strip=True) if price_el else None
 
-        except Exception as e:
-            logging.error(f'❌ compumarts scraper failed: {e}')
-            break
+            # Default to in stock unless "Sold out" is found
+            in_stock = True
+            label_container = item.select_one("span.product-label--sold-out")
+            if label_container:
+                in_stock = False
 
-    logging.info('✅finshed scrapping compumarts')
-    return data
+
+            scraper.data.append({
+                "title": title,
+                "price": price,
+                "link": link,
+                "in_stock": in_stock,
+                "store": "compumarts"
+            })
+
+        print(f'finished scraping this page {page_number}')
+
+    except Exception as e:
+        logging.error(f'compumarts scraper failed: {e}')
+        scraper.signal = False
+
+
+
 
