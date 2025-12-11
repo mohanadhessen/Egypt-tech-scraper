@@ -27,8 +27,8 @@ def schedule():
     try :   
         most_searched = get_most_searched()
         for product in most_searched:
-            logging.info(f"product name currently begin scraped {product['product_name']}")
-            add_to_database(merging_data(product['product_name']))
+            logging.info(f"product name currently begin scraped {product['token']}")
+            add_to_database(formater(merging_data(product['token'])))
         logging.info('✅ finished scraping all product')
     
     except Exception as e:
@@ -38,6 +38,8 @@ def schedule():
 
 if __name__ == "__main__":
     schedule()
+
+
 
 
 

@@ -68,5 +68,4 @@ def compumarts_scraper(product_name):
     return scraper.data
 
 
-print(len(compumarts_scraper("4070")))
 
