@@ -1,25 +1,26 @@
 from db_product_updater import get_most_searched , add_to_database
-from scraping_modules.elnekhely import elnekhely
-from scraping_modules.elbadrgroupeg import elbadrgroupeg
-from scraping_modules.compumarts import compumarts
-from scraping_modules.sigma import sigma
-from scraping_modules.scraper_base import BaseScraper
+from scraping_modules.sigma import sigma_scraper
+from scraping_modules.elnekhely import elnekhely_scraper
+from scraping_modules.compumarts import compumarts_scraper
+from scraping_modules.elbadrgroupeg import elbadrgroupeg_scraper
 from data_formater import formater
 import logging
+
+
 logging.basicConfig(level=logging.INFO)
 
 
-sigma_scraper = BaseScraper()
-elnekhely_scraper = BaseScraper()
-compumarts_scraper = BaseScraper()
-elbadrgroupeg_scraper = BaseScraper()
 
-def merging_data(product):
-    sigma_scraper.run_threads(product)
-    elnekhely_scraper.run_threads(product)
-    compumarts_scraper.run_threads(product)
-    elbadrgroupeg_scraper.run_threads(product)
-    return sigma_scraper.data + elnekhely_scraper.data + compumarts_scraper.data + elbadrgroupeg_scraper.data
+def merging_data(product_name):
+    """
+    Run all scrapers for a product and merge results into a single list.
+    """
+    return (
+        sigma_scraper(product_name) +
+        elnekhely_scraper(product_name) +
+        compumarts_scraper(product_name) +
+        elbadrgroupeg_scraper(product_name)
+    )
 
 
 def schedule():
@@ -37,3 +38,7 @@ def schedule():
 
 if __name__ == "__main__":
     schedule()
+
+
+
+
