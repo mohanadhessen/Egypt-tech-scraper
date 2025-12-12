@@ -1,4 +1,4 @@
-from scraper_base import BaseScraper
+from .scraper_base import BaseScraper
 import logging
 
 
