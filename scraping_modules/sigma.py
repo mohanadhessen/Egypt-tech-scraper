@@ -19,7 +19,6 @@ def sigma_scraper(product_name):
             # Select all product items
             items = soup.select('div.px-2.md\\:px-4.py-1.md\\:py-2')
             if not items:
-                logging.info(f"No items found on page {page_number}")
                 scraper.signal = False
                 return
 
@@ -55,14 +54,14 @@ def sigma_scraper(product_name):
                     "in_stock": in_stock,
                     'store': 'sigma'
                 })
-
-            logging.info(f"Scraped Sigma page {page_number} for '{product_name}'")
-
+            logging.info(f"✅ Finished scraping sigma page {page_number}")
+    
         except Exception as e:
-            logging.error(f"Error scraping page {page_number} for '{product_name}': {e}")
+            logging.error(f"❌ sigma scraper failed on page {page_number}: {e}")
             scraper.signal = False
-
+            return
+    
     # Run scraping function in threads
     scraper.run_threads(sigma, product_name)
-    
     return scraper.data
+

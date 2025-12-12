@@ -1,4 +1,4 @@
-from .scraper_base import BaseScraper
+from scraper_base import BaseScraper
 import logging
 
 
@@ -18,7 +18,6 @@ def elbadrgroupeg_scraper(product_name):
             # Fetch and parse the page
             soup = scraper.fetch_page(url, 10)
             if soup is None:
-                logging.warning(f"Failed to fetch page {page_number} for '{product_name}'")
                 scraper.signal = False
                 return 
     
@@ -65,8 +64,15 @@ def elbadrgroupeg_scraper(product_name):
         except Exception as e:
             logging.error(f"❌ ElbadrGroupeG scraper failed on page {page_number}: {e}")
             scraper.signal = False
+            return
     
     # Run scraping function in threads
     scraper.run_threads(elbadrgroupeg, product_name)
     return scraper.data
+
+
+
+
+
+
 

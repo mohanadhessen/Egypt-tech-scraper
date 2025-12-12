@@ -25,7 +25,6 @@ def compumarts_scraper(product_name):
             # Select all product items
             items = soup.select("div.main-products-grid__results li")
             if not items:
-                logging.info(f"No items found on page {page_number}")
                 scraper.signal = False
                 return
     
@@ -56,16 +55,18 @@ def compumarts_scraper(product_name):
                     "store": "compumarts"
                 })
     
-            logging.info(f"✅ Finished scraping Compumarts page {page_number}")
+            logging.info(f"✅ Finished scraping compumarts page {page_number}")
     
         except Exception as e:
-            logging.error(f"❌ Compumarts scraper failed on page {page_number}: {e}")
+            logging.error(f"❌ compumarts scraper failed on page {page_number}: {e}")
             scraper.signal = False
-
+            return
+    
     # Run scraping function in threads
     scraper.run_threads(compumarts, product_name)
-    
     return scraper.data
+
+
 
 
 

@@ -20,7 +20,6 @@ def elnekhely_scraper(product_name):
             # Fetch and parse the page
             soup = scraper.fetch_page(url, 10)
             if soup is None:
-                logging.warning(f"Failed to fetch page {page_number} for '{product_name}'")
                 scraper.signal = False
                 return 
             
@@ -62,12 +61,13 @@ def elnekhely_scraper(product_name):
                     'store': 'elnekhely'
                 })
 
-            logging.info(f"Scraped Elnekhely page {page_number} successfully")
-            
+            logging.info(f"✅ Finished scraping elnekhely page {page_number}")
+    
         except Exception as e:
-            logging.error(f"❌ Elnekhely scraper failed on page {page_number}: {e}")
+            logging.error(f"❌ elnekhely scraper failed on page {page_number}: {e}")
             scraper.signal = False
-
+            return
+    
     # Run scraping function in threads
     scraper.run_threads(elnekhely, product_name)
     return scraper.data
