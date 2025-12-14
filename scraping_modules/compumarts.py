@@ -23,37 +23,40 @@ def compumarts_scraper(product_name):
                 raise Exception("fetch_page failed")
     
             # Select all product items
-            items = soup.select("div.main-products-grid__results li")
+            items = soup.select("div.main-products-grid__results li product-card")
             if not items:
                 scraper.signal = False
                 return
     
             for item in items:
-                # Extract title
-                title_el = item.select_one(".card__title a")
-                title = title_el.get_text(strip=True) if title_el else None
-    
-                # Extract link
-                link = "https://www.compumarts.com/" + title_el.get("href") if title_el else None
-    
-                # Extract price
-                price_el = item.select_one(".price__current .js-value")
-                price = price_el.get_text(strip=True) if price_el else None
-    
-                # Determine stock status
-                in_stock = True
-                label_container = item.select_one("span.product-label--sold-out")
-                if label_container:
-                    in_stock = False
-    
-                # Append product data
-                scraper.data.append({
-                    "title": title,
-                    "price": price,
-                    "link": link,
-                    "in_stock": in_stock,
-                    "store": "compumarts"
-                })
+                try :
+                    # Extract title
+                    title = item.select_one('p.card__title a').text
+                    
+                    # # Extract link
+                    link = "https://www.compumarts.com/" + item.select_one('p.card__title a').get('href')
+        
+                    
+                    # # Extract price
+                    price = item.select_one(".price__current .js-value").text
+
+                    # Determine stock status
+                    in_stock = True
+                    label_container = item.select_one("span.product-label--sold-out")
+                    if label_container:
+                        in_stock = False
+        
+                    # Append product data
+                    scraper.data.append({
+                        "title": title,
+                        "price": price,
+                        "link": link,
+                        "in_stock": in_stock,
+                        "store": "compumarts"
+                    })
+                except Exception as e:
+                    logging.error(f"there was an error in getting the info as {e}")
+                    continue
     
             logging.info(f"✅ Finished scraping compumarts page {page_number}")
     
@@ -65,6 +68,7 @@ def compumarts_scraper(product_name):
     # Run scraping function in threads
     scraper.run_threads(compumarts, product_name)
     return scraper.data
+
 
 
 

@@ -1,6 +1,7 @@
 from .scraper_base import BaseScraper
 import logging
 
+
 def sigma_scraper(product_name):
     scraper = BaseScraper()
 
@@ -23,37 +24,30 @@ def sigma_scraper(product_name):
                 return
 
             for item in items:
-                # Extract price
-                price_el = item.select_one("p.font-bold.text-\\[\\#026EB3\\]")
-                price = price_el.get_text(strip=True) if price_el else None
-
-                # Extract title
-                title_el = item.select_one(
-                    "a.chakra-tooltip__trigger.line-clamp-2.w-fit.font-semibold.dark\\:text-sigma-blue-50.text-sm.md\\:text-base"
-                )
-                title = title_el.get_text(strip=True) if title_el else None
-
-                # Extract product link
-                link = None
-                if title_el:
-                    href = title_el.get("href")
-                    if href:
-                        link = "https://www.sigma-computer.com/" + href
-
-                # Determine stock status
-                in_stock = True
-                badges_container = item.select_one("div#badges-container")
-                if badges_container and "out of stock" in badges_container.get_text(strip=True).lower():
-                    in_stock = False
-
-                # Append product data
-                scraper.data.append({
-                    "title": title,
-                    "price": price,
-                    "link": link,
-                    "in_stock": in_stock,
-                    'store': 'sigma'
-                })
+                try :
+                    info = item.select_one("a.chakra-tooltip__trigger.line-clamp-2.w-fit.font-semibold.dark\\:text-sigma-blue-50.text-sm.md\\:text-base")
+                    title = info.text
+                    link = "https://www.sigma-computer.com/" + info.get('href')
+                    price = item.select_one("p.font-bold.text-sigma-blue-600").text
+                    
+                    # Determine stock status
+                    in_stock = True
+                    badges_container = item.select_one("div#badges-container")
+                    if badges_container and "out of stock" in badges_container.get_text(strip=True).lower():
+                        in_stock = False
+    
+                    # Append product data
+                    scraper.data.append({
+                        "title": title,
+                        "price": price,
+                        "link": link,
+                        "in_stock": in_stock,
+                        'store': 'sigma'
+                    })
+                except Exception as e:
+                    logging.error(f"there was an error in getting the info as {e}")
+                    continue
+                
             logging.info(f"✅ Finished scraping sigma page {page_number}")
     
         except Exception as e:
@@ -64,4 +58,5 @@ def sigma_scraper(product_name):
     # Run scraping function in threads
     scraper.run_threads(sigma, product_name)
     return scraper.data
+
 

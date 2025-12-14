@@ -29,36 +29,44 @@ def elbadrgroupeg_scraper(product_name):
                 return
     
             for item in items:
-                # Extract title
-                title_el = item.select_one(".name a")
-                title = title_el.get_text(strip=True) if title_el else None
+                try:
+                    # Extract title
+                    title = item.select_one(".name a").text
+                    # Extract link
+                    link = item.select_one(".name a").get("href") 
+                    # Extract price
+                    price = None
+        
+                    price_spans = item.find('div', class_='price').find_all('span')
+                    for span in price_spans:
+                        span_class = span.get('class')[0]
+                        if span_class in ['price-normal', 'price-new']:
+                            price = span.text
     
-                # Extract link
-                link = title_el.get("href") if title_el else None
     
-                # Extract price
-                price_el = item.select_one("span.price-normal, span.price-new")
-                price = price_el.get_text(strip=True) if price_el else None
-    
-                # Determine stock status
-                in_stock = True
-                labels = item.select_one('div.product-labels')
-                if labels:
-                    spans = labels.select('span')
-                    for span in spans:
-                        if span.text.strip().lower() in ["out of stock", "coming soon"]:
-                            in_stock = False
-                            break
-    
-                # Append product data
-                scraper.data.append({
-                    "title": title,
-                    "price": price,
-                    "link": link,
-                    "in_stock": in_stock,
-                    'store': 'elbadrgroupeg'
-                })
-    
+                    # Determine stock status
+                    in_stock = True
+                    labels = item.select_one('div.product-labels')
+                    if labels:
+                        spans = labels.select('span')
+                        for span in spans:
+                            if span.text.strip().lower() in ["out of stock", "coming soon"]:
+                                in_stock = False
+                                break
+        
+                    # Append product data
+                    scraper.data.append({
+                        "title": title,
+                        "price": price,
+                        "link": link,
+                        "in_stock": in_stock,
+                        'store': 'elbadrgroupeg'
+                    })
+                except Exception as e:
+                    logging.error(f"there was an error in getting the info as {e}")
+                    continue
+
+
             logging.info(f"✅ Finished scraping ElbadrGroupeG page {page_number}")
     
         except Exception as e:
