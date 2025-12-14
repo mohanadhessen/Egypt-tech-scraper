@@ -5,11 +5,8 @@ import logging
 
 def compumarts_scraper(product_name):
     scraper = BaseScraper()
+    
     def compumarts(product_name, page_number):
-        """
-        Scrape product data from Compumarts website for a given product name.
-        Uses the provided BaseScraper instance.
-        """
         logging.info(f"🔍 Scraping Compumarts page {page_number} for '{product_name}'")
     
         try:

@@ -6,6 +6,7 @@ def sigma_scraper(product_name):
     scraper = BaseScraper()
 
     def sigma(product_name, page_number):
+        logging.info(f"🔍 Scraping sigma page {page_number} for '{product_name}'")
         try:
             # Build the URL for the current page
             url = f"https://www.sigma-computer.com/en/search?q={product_name}&pageSize=50&page={page_number}"

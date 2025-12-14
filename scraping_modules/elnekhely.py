@@ -4,10 +4,6 @@ import logging
 
 
 def elnekhely_scraper(product_name):
-    """
-    Scrape product data from Elnekhely Technology website for a given product name.
-    Uses BaseScraper and runs multiple pages concurrently.
-    """
     scraper = BaseScraper()
 
     def elnekhely(product_name, page_number):
@@ -41,7 +37,6 @@ def elnekhely_scraper(product_name):
                         span_class = span.get('class')[0]
                         if span_class in ['price-normal', 'price-new']:
                             price = span.text
-                    print(price)
     
                     # Determine stock status
                     in_stock = True

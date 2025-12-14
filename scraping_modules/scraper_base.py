@@ -23,7 +23,6 @@ class BaseScraper:
         """
         for i in range(retries):
             try:
-                logging.info(f"Attempt {i+1} of {retries} for URL: {url}")
                 response = requests.get(url, timeout=30)
                 response.raise_for_status()
                 soup = BeautifulSoup(response.text, 'html.parser')

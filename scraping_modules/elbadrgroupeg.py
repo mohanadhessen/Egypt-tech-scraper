@@ -5,10 +5,7 @@ import logging
 def elbadrgroupeg_scraper(product_name):
     scraper = BaseScraper()
     def elbadrgroupeg(product_name, page_number):
-        """
-        Scrape product data from Elbadr Group EG website for a given product name.
-        Uses the provided BaseScraper instance.
-        """
+
         logging.info(f"🔍 Scraping ElbadrGroupeG page {page_number} for '{product_name}'")
         
         try:
